@@ -1,0 +1,2 @@
+# qrSeguro
+QR Seguro
