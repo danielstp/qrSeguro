@@ -36,15 +36,15 @@ import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
  *
  */
 public class App extends JFrame {
-   /**
-	 * 
-	 */
-	private static final long serialVersionUID = 5093844796785224031L;
-// Name-constants to define the various dimensions
-   public static final int WINDOW_WIDTH = 300;
-   public static final int WINDOW_HEIGHT = 150;
- 
-   // private variables of UI components
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 5093844796785224031L;
+    // Name-constants to define the various dimensions
+    public static final int WINDOW_WIDTH = 300;
+    public static final int WINDOW_HEIGHT = 150;
+
+    // private variables of UI components
     JRadioButton RtoLbutton;
     JRadioButton LtoRbutton;
     JTextArea cadenaACifrar;
@@ -52,86 +52,88 @@ public class App extends JFrame {
     final String RtoL = "Right to left";
     final String LtoR = "Left to right";
     JButton applyButton = new JButton("Apply component orientation");
-	private JButton botonSalir = new JButton("Salir");;
- 
-   /** Constructor to setup the UI components */
-   public App() {
-      addWindowListener( new Terminator());
-      Container cp = this.getContentPane();
- 
-      // Content-pane sets layout
-      cp.setLayout(new FlowLayout());
- 
-      // Allocate the UI components
- 
-      // Content-pane adds components
-      addComponentsToPane(cp);
- 
-      // Source object adds listener
-      // .....
+    private JButton botonSalir  = new JButton("Salir");;
+    private JButton botonGenera = new JButton("GeneraQR");;
 
-      setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  // Exit when close button clicked
-      setTitle("QR Seguro"); // "this" JFrame sets title
-      setSize(WINDOW_WIDTH, WINDOW_HEIGHT);  // or pack() the components
-      setVisible(true);   // show it
-   }
+    /** Constructor to setup the UI components */
+    public App() {
+        addWindowListener( new Terminator());
+        Container cp = this.getContentPane();
 
-   /** The entry main() method */
-   public static void main(String[] args) {
-      // Run GUI codes in the Event-Dispatching thread for thread safety
-      SwingUtilities.invokeLater(new Runnable() {
-         public void run() {
-            new App();  // Let the constructor do the job
-         }
-      });
-//////////////////////////////////////////////////////////////////////////////
-//                               QR                                         //
-//////////////////////////////////////////////////////////////////////////////
-      String myCodeText = "http://Crunchify.com/";
-      
-      // change path as per your laptop/desktop location
-      String filePath = "/Users/appshah/Documents/CrunchifyQR.png";
-      int size = 125;
-      String fileType = "png";
-      File myFile = new File(filePath);
-      try {
-          Hashtable<EncodeHintType, ErrorCorrectionLevel> hintMap = new Hashtable<EncodeHintType, ErrorCorrectionLevel>();
-          hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
-          QRCodeWriter qrCodeWriter = new QRCodeWriter();
-          BitMatrix byteMatrix = qrCodeWriter.encode(myCodeText,BarcodeFormat.QR_CODE, size, size, hintMap);
-          int CrunchifyWidth = byteMatrix.getWidth();
-          BufferedImage image = new BufferedImage(CrunchifyWidth, CrunchifyWidth,
-                  BufferedImage.TYPE_INT_RGB);
-          image.createGraphics();
+        // Content-pane sets layout
+        cp.setLayout(new FlowLayout());
 
-          Graphics2D graphics = (Graphics2D) image.getGraphics();
-          graphics.setColor(Color.WHITE);
-          graphics.fillRect(0, 0, CrunchifyWidth, CrunchifyWidth);
-          graphics.setColor(Color.BLACK);
+        // Allocate the UI components
 
-          for (int i = 0; i < CrunchifyWidth; i++) {
-              for (int j = 0; j < CrunchifyWidth; j++) {
-                  if (byteMatrix.get(i, j)) {
-                      graphics.fillRect(i, j, 1, 1);
-                  }
-              }
-          }
-          ImageIO.write(image, fileType, myFile);
-      } catch (WriterException e) {
-          e.printStackTrace();
-      } catch (IOException e) {
-          e.printStackTrace();
-      }
-      System.out.println("\n\nYou have successfully created QR Code.");
-      
-   }
-   public void addComponentsToPane(final Container pane) {
+        // Content-pane adds components
+        addComponentsToPane(cp);
+
+        // Source object adds listener
+        // .....
+
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  // Exit when close button clicked
+        setTitle("QR Seguro"); // "this" JFrame sets title
+        setSize(WINDOW_WIDTH, WINDOW_HEIGHT);  // or pack() the components
+        setVisible(true);   // show it
+    }
+
+    /** The entry main() method */
+    public static void main(String[] args) {
+        // Run GUI codes in the Event-Dispatching thread for thread safety
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                new App();  // Let the constructor do the job
+            }
+        });
+        //////////////////////////////////////////////////////////////////////////////
+        //                               QR                                         //
+        //////////////////////////////////////////////////////////////////////////////
+
+    }
+    private void generaQR(){
+        // change path as per your laptop/desktop location
+        String filePath = "./CrunchifyQR.png";
+        int size = 125;
+        String fileType = "png";
+        File myFile = new File(filePath);
+        try {
+            Hashtable<EncodeHintType, ErrorCorrectionLevel> hintMap = new Hashtable<EncodeHintType, ErrorCorrectionLevel>();
+            hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
+            QRCodeWriter qrCodeWriter = new QRCodeWriter();
+            BitMatrix byteMatrix = qrCodeWriter.encode(cadenaACifrar.getText(),BarcodeFormat.QR_CODE, size, size, hintMap);
+            int CrunchifyWidth = byteMatrix.getWidth();
+            BufferedImage image = new BufferedImage(CrunchifyWidth, CrunchifyWidth,
+                    BufferedImage.TYPE_INT_RGB);
+            image.createGraphics();
+
+            Graphics2D graphics = (Graphics2D) image.getGraphics();
+            graphics.setColor(Color.WHITE);
+            graphics.fillRect(0, 0, CrunchifyWidth, CrunchifyWidth);
+            graphics.setColor(Color.BLACK);
+
+            for (int i = 0; i < CrunchifyWidth; i++) {
+                for (int j = 0; j < CrunchifyWidth; j++) {
+                    if (byteMatrix.get(i, j)) {
+                        graphics.fillRect(i, j, 1, 1);
+                    }
+                }
+            }
+            ImageIO.write(image, fileType, myFile);
+        } catch (WriterException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println("\n\nYou have successfully created QR Code.");
+    }
+
+    public void addComponentsToPane(final Container pane) {
         final JPanel compsToExperiment = new JPanel();
         compsToExperiment.setLayout(experimentLayout);
         experimentLayout.setAlignment(FlowLayout.TRAILING);
         JPanel controls = new JPanel();
         controls.setLayout(new FlowLayout());
-         
+
         LtoRbutton = new JRadioButton(LtoR);
         LtoRbutton.setActionCommand(LtoR);
         LtoRbutton.setSelected(true);
@@ -142,19 +144,25 @@ public class App extends JFrame {
         compsToExperiment.add(cadenaACifrar);
         compsToExperiment.add(new JButton("2"));
         compsToExperiment.add(new JButton("3"));
-        compsToExperiment.add(new JButton("4"));
+        compsToExperiment.add(botonGenera);
         compsToExperiment.add(botonSalir);
+        
+        botonGenera.addActionListener(new ActionListener() { 
+            public void actionPerformed(ActionEvent e) {
+                generaQR();
+            }
+        });
 
         botonSalir.addActionListener(new ActionListener() { 
             public void actionPerformed(ActionEvent e) {
-              System.exit(0);
+                System.exit(0);
             } 
-          } );
-        
+        } );
+
         //Left to right component orientation is selected by default
         compsToExperiment.setComponentOrientation(
                 ComponentOrientation.LEFT_TO_RIGHT);
-         
+
         //Add controls to set up the component orientation in the experiment layout
         final ButtonGroup group = new ButtonGroup();
         group.add(LtoRbutton);
@@ -162,7 +170,7 @@ public class App extends JFrame {
         controls.add(LtoRbutton);
         controls.add(RtoLbutton);
         controls.add(applyButton);
-         
+
         //Process the Apply component orientation button press
         applyButton.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
@@ -186,7 +194,7 @@ public class App extends JFrame {
 }
 
 class Terminator extends WindowAdapter {
-      public void windowClosing(WindowEvent e) {
+    public void windowClosing(WindowEvent e) {
         System.exit(0); 
-      }
+    }
 }
