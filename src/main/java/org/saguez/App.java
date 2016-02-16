@@ -149,6 +149,7 @@ public class App extends JFrame {
         
         botonGenera.addActionListener(new ActionListener() { 
             public void actionPerformed(ActionEvent e) {
+                System.out.println("\n\nPor Generar");
                 generaQR();
             }
         });
