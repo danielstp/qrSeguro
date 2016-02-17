@@ -11,14 +11,15 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.Base64;
 import java.util.Hashtable;
 
-import javax.imageio.ImageIO;
 import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextArea;
@@ -45,18 +46,31 @@ public class App extends JFrame {
     public static final int WINDOW_HEIGHT = 150;
 
     // private variables of UI components
-    JRadioButton RtoLbutton;
-    JRadioButton LtoRbutton;
-    JTextArea cadenaACifrar;
-    FlowLayout experimentLayout = new FlowLayout();
-    final String RtoL = "Right to left";
-    final String LtoR = "Left to right";
-    JButton applyButton = new JButton("Apply component orientation");
+    private JRadioButton RtoLbutton = null;
+    private JRadioButton LtoRbutton = null;
+    private JTextArea cadenaACifrar = new JTextArea(5,35);
+    private FlowLayout experimentLayout = new FlowLayout();
+    private final String RtoL = "Right to left";
+    private final String LtoR = "Left to right";
+    private JButton applyButton = new JButton("Apply component orientation");
     private JButton botonSalir  = new JButton("Salir");;
-    private JButton botonGenera = new JButton("GeneraQR");;
+    private JButton botonGenera = new JButton("GeneraQR");
+	private JTextArea cadenaCifrada = new JTextArea(5,35);
+	private BufferedImage imagenRaw = new BufferedImage(335, 335,
+                    BufferedImage.TYPE_INT_RGB);
+	private ImageIcon imageIcon = new ImageIcon(imagenRaw);
+	private JLabel imagen = new JLabel(imageIcon);
 
     /** Constructor to setup the UI components */
     public App() {
+    	cadenaACifrar.setText("Prueba");
+    	try {
+			cadenaCifrada.setText(Base64.getEncoder().encodeToString(cadenaACifrar.getText().getBytes("UTF-8")));
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	generaQR();
         addWindowListener( new Terminator());
         Container cp = this.getContentPane();
 
@@ -91,22 +105,26 @@ public class App extends JFrame {
 
     }
     private void generaQR(){
-        // change path as per your laptop/desktop location
-        String filePath = "./CrunchifyQR.png";
-        int size = 125;
-        String fileType = "png";
-        File myFile = new File(filePath);
+
+        int size = 325;
+
+        try {
+			cadenaCifrada.setText(Base64.getEncoder().encodeToString(cadenaACifrar.getText().getBytes("UTF-8")));
+		} catch (UnsupportedEncodingException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
         try {
             Hashtable<EncodeHintType, ErrorCorrectionLevel> hintMap = new Hashtable<EncodeHintType, ErrorCorrectionLevel>();
             hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
             QRCodeWriter qrCodeWriter = new QRCodeWriter();
-            BitMatrix byteMatrix = qrCodeWriter.encode(cadenaACifrar.getText(),BarcodeFormat.QR_CODE, size, size, hintMap);
+            BitMatrix byteMatrix = qrCodeWriter.encode(cadenaCifrada.getText(),BarcodeFormat.QR_CODE, size, size, hintMap);
             int CrunchifyWidth = byteMatrix.getWidth();
-            BufferedImage image = new BufferedImage(CrunchifyWidth, CrunchifyWidth,
+            imagenRaw = new BufferedImage(CrunchifyWidth, CrunchifyWidth,
                     BufferedImage.TYPE_INT_RGB);
-            image.createGraphics();
+            imagenRaw.createGraphics();
 
-            Graphics2D graphics = (Graphics2D) image.getGraphics();
+            Graphics2D graphics = (Graphics2D) imagenRaw.getGraphics();
             graphics.setColor(Color.WHITE);
             graphics.fillRect(0, 0, CrunchifyWidth, CrunchifyWidth);
             graphics.setColor(Color.BLACK);
@@ -118,34 +136,38 @@ public class App extends JFrame {
                     }
                 }
             }
-            ImageIO.write(image, fileType, myFile);
+            //ImageIO.write(image, fileType, myFile);
+            imageIcon.setImage(imagenRaw);
+            imagen.setIcon(imageIcon);
+            Container cp = this.getContentPane();
+            imagen.repaint();
+            cp.repaint();
         } catch (WriterException e) {
             e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        System.out.println("\n\nYou have successfully created QR Code.");
+        } //catch (IOException e) {
+            //e.printStackTrace();
+        //}
     }
 
     public void addComponentsToPane(final Container pane) {
         final JPanel compsToExperiment = new JPanel();
         compsToExperiment.setLayout(experimentLayout);
-        experimentLayout.setAlignment(FlowLayout.TRAILING);
+        experimentLayout.setAlignment(FlowLayout.CENTER);
         JPanel controls = new JPanel();
-        controls.setLayout(new FlowLayout());
+        
+        
+        controls.setLayout(new FlowLayout(FlowLayout.CENTER));
+        imagen.setLayout(new FlowLayout(FlowLayout.CENTER));
 
         LtoRbutton = new JRadioButton(LtoR);
         LtoRbutton.setActionCommand(LtoR);
         LtoRbutton.setSelected(true);
         RtoLbutton = new JRadioButton(RtoL);
         RtoLbutton.setActionCommand(RtoL);
-        cadenaACifrar = new JTextArea(5,35);
         //Add buttons to the experiment layout
         compsToExperiment.add(cadenaACifrar);
-        compsToExperiment.add(new JButton("2"));
-        compsToExperiment.add(new JButton("3"));
-        compsToExperiment.add(botonGenera);
-        compsToExperiment.add(botonSalir);
+        compsToExperiment.add(cadenaCifrada);
+
         
         botonGenera.addActionListener(new ActionListener() { 
             public void actionPerformed(ActionEvent e) {
@@ -171,6 +193,8 @@ public class App extends JFrame {
         controls.add(LtoRbutton);
         controls.add(RtoLbutton);
         controls.add(applyButton);
+        controls.add(botonGenera);
+        controls.add(botonSalir);
 
         //Process the Apply component orientation button press
         applyButton.addActionListener(new ActionListener(){
@@ -190,7 +214,8 @@ public class App extends JFrame {
             }
         });
         pane.add(compsToExperiment, BorderLayout.CENTER);
-        pane.add(controls, BorderLayout.SOUTH); ;
+        pane.add(controls, BorderLayout.SOUTH);
+        pane.add(imagen, BorderLayout.SOUTH);
     }
 }
 
